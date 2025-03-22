@@ -1,0 +1,95 @@
+@import "tailwindcss";
+:root {
+  --mainColor: #5f35f5;
+  --mainBgColor: #fcfcfc;
+  --authFontColor: #11175d;
+  --mainFontColor: #000000;
+}
+
+@theme {
+  --color-mainColor: var(--mainColor);
+  --color-mainBgColor: var(--mainBgColor);
+  --color-authFontColor: var(--authFontColor);
+  --color-mainFontColor: var(--mainFontColor);
+}
+
+.active {
+  background-color: white;
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  position: relative;
+}
+
+.active::after {
+  position: absolute;
+  content: "";
+  right: -7px;
+  top: 0px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  background-color: #5f35f5;
+  height: 100%;
+  width: 20px;
+}
+
+
+/* custom scroolbar */
+
+/* width */
+/* ::-webkit-scrollbar  {
+  width: 10px;
+}
+
+/* Track */
+/* ::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  border-radius: 10px;
+} */
+
+/* Handle */
+/* ::-webkit-scrollbar-thumb {
+  background: rgb(142, 40, 40);
+  border-radius: 10px;
+} */
+/* hover */
+/* ::-webkit-scrollbar-thumb:hover{
+  background: yellowgreen;
+}  */ */
+
+
+
+/* Scrollable Content Container */
+.scrollable-content {
+  width: 100%;
+  height: 92dvh;
+  overflow-y: scroll; /* Enables vertical scrolling */
+  padding-right: 10px;
+  border-radius: 10px;
+}
+
+/* Custom Scrollbar ONLY for .scrollable-content */
+.scrollable-content::-webkit-scrollbar {
+  width: 9px;
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #ff416c, #ff4b2b);
+  border-radius: 10px;
+  transition: background 0.3s ease-in-out;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #ff1b6b, #ff5733);
+}
+
+
