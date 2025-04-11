@@ -1,27 +1,24 @@
-import { getAuth } from "firebase/auth";
-import React, { useEffect, useState } from "react";
-import { Outlet } from "react-router";
+import React, { use, useEffect, useState } from "react";
+import { Outlet, useNavigate } from "react-router";
 import Sidebar from "../HomeComponents/Sidebar";
-
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import ValidationError from "../../pages/Error/ValidationError";
+import { IoEllipseSharp } from "react-icons/io5";
 const RootLayout = () => {
+  const navigate = useNavigate();
   const auth = getAuth();
-  const [isuserVerified , setisuserVerified] = useState(false)
-
+  const [isuserVerified, setisuserVerified] = useState(false);
   useEffect(() => {
-   
-      setisuserVerified(auth?.currentUser?.emailVerified);
-      console.log("isuserVerified" , auth.currentUser.email);
-    
-    
-  }, [auth ,isuserVerified]);
+    onAuthStateChanged(auth, (user) => {
+      if (user.emailVerified) {
+        setisuserVerified(user.emailVerified);
+      } else {
+        navigate("/signin");
+        alert("First Verify Your Mail");
+      }
+    });
+  }, []);
 
-  
-
-    
-
-
-
-  
   return (
     <div>
       {isuserVerified ? (
@@ -34,7 +31,7 @@ const RootLayout = () => {
           </div>
         </div>
       ) : (
-        "nei"
+        <ValidationError />
       )}
     </div>
   );

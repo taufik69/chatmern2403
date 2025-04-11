@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { CgLogOut } from "react-icons/cg";
 import { FaGears } from "react-icons/fa6";
 import { FiBell } from "react-icons/fi";
@@ -7,10 +7,13 @@ import { getAuth, signOut } from "firebase/auth";
 import { IoCloudUploadOutline, IoHomeOutline } from "react-icons/io5";
 import { TiMessages } from "react-icons/ti";
 import { useLocation, useNavigate } from "react-router";
+import { getDatabase, ref, onValue } from "firebase/database";
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const db = getDatabase();
   const auth = getAuth();
+  const [userdata, setuserdata] = useState({});
   const navigationIcon = [
     {
       id: 1,
@@ -85,15 +88,29 @@ const Sidebar = () => {
   const handlelogOut = () => {
     signOut(auth)
       .then(() => {
-         navigate("/signin");
+        navigate("/signin");
       })
       .catch((err) => {
         console.log("error form logout funtion", err);
       });
   };
 
- 
-  
+  // fetch the user data from user database
+  useEffect(() => {
+    const fetchData = () => {
+      const UserRef = ref(db, "users/");
+      onValue(UserRef, (snapshot) => {
+        let userblankinfo = null;
+        snapshot.forEach((item) => {
+          if (item.val().userUid === auth.currentUser.uid) {
+            userblankinfo = { ...item.val(), userKey: item.key };
+          }
+        });
+        setuserdata(userblankinfo);
+      });
+    };
+    fetchData();
+  }, []);
 
   return (
     <div>
@@ -102,7 +119,11 @@ const Sidebar = () => {
           <div className="w-[70px] h-[70px] mt-10 rounded-full relative cursor-pointer group">
             <picture>
               <img
-                src="https://images.pexels.com/photos/9072375/pexels-photo-9072375.jpeg?auto=compress&cs=tinysrgb&w=600"
+                src={
+                  userdata
+                    ? userdata.profile_picture
+                    : "https://images.pexels.com/photos/9072375/pexels-photo-9072375.jpeg?auto=compress&cs=tinysrgb&w=600"
+                }
                 alt="profilepicture"
                 className=" w-full h-full object-cover rounded-full"
               />
@@ -117,6 +138,9 @@ const Sidebar = () => {
         </div>
         {/* navigation icon */}
         <div className="flex flex-col items-center gap-y-10 justify-center mt-12">
+          <div>
+            <h1>{userdata ? userdata.username : "Missing"} </h1>
+          </div>
           {navigationIcon?.map((item, index) =>
             navigationIcon.length - 1 == index ? (
               <div
