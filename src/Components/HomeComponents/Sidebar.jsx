@@ -7,7 +7,7 @@ import { getAuth, signOut } from "firebase/auth";
 import { IoCloudUploadOutline, IoHomeOutline } from "react-icons/io5";
 import { TiMessages } from "react-icons/ti";
 import { useLocation, useNavigate } from "react-router";
-import { getDatabase, ref, onValue } from "firebase/database";
+import { getDatabase, ref, onValue ,update  } from "firebase/database";
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -71,8 +71,9 @@ const Sidebar = () => {
         if (error) {
           throw new Error("Failed to upload profile picture");
         }
-
-        console.log(result.info.secure_url);
+        update(ref(db , `users/${userdata.userKey}`), {
+          profile_picture: result?.info?.secure_url
+        });
       }
     );
   };
@@ -112,6 +113,7 @@ const Sidebar = () => {
     fetchData();
   }, []);
 
+
   return (
     <div>
       <div className="w-[130px] bg-green-400 rounded-3xl h-[96dvh]">
@@ -139,7 +141,7 @@ const Sidebar = () => {
         {/* navigation icon */}
         <div className="flex flex-col items-center gap-y-10 justify-center mt-12">
           <div>
-            <h1>{userdata ? userdata.username : "Missing"} </h1>
+            <h1 className="text-xl text-white">{userdata ? userdata.username : "Missing"} </h1>
           </div>
           {navigationIcon?.map((item, index) =>
             navigationIcon.length - 1 == index ? (

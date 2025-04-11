@@ -41,7 +41,6 @@ const Signin = () => {
     const { email, password } = loginInfo;
     signInWithEmailAndPassword(auth, email, password)
       .then((info) => {
-        console.log(info);
         navigate("/");
       })
       .catch((err) => {
