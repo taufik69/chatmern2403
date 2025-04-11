@@ -15,6 +15,7 @@ const App = () => {
           <Route path="/notification" element={"this is notification page"} />
           <Route path="/settings" element={"This is setting page"}></Route>
         </Route>
+        {/* asd */}
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<Signin />} />
       </Routes>
