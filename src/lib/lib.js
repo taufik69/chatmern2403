@@ -1,5 +1,5 @@
 import { toast, Bounce } from "react-toastify";
-
+import moment from "moment/moment";
 const _ = {};
 _.singUpdata = () => {
   const singupiterm = [
@@ -22,9 +22,9 @@ _.singUpdata = () => {
 
   return singupiterm;
 };
-_.SucessToast = (msg = "sucess msg missing") => {
+_.SucessToast = (msg = "sucess msg missing" , positon = "top-right") => {
   toast.success(msg, {
-    position: "top-right",
+    position: positon,
     autoClose: 5000,
     hideProgressBar: false,
     closeOnClick: false,
@@ -63,5 +63,10 @@ _.infoToast = (msg = "info Missing") => {
     transition: Bounce,
   });
 };
+
+// time and data 
+_.getTimeNow = ()=> {
+  return moment().format("MM DD YYYY, h:mm:ss a")
+}
 
 export default _;
