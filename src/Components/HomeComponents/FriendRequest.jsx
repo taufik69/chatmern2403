@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { HiDotsVertical } from "react-icons/hi";
 import Avatar from "../../assets/homeAssets/avatar.gif";
-import { getDatabase, ref, onValue, off, push, set } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  off,
+  push,
+  set,
+  remove,
+} from "firebase/database";
 import { getAuth } from "firebase/auth";
 import UserSkeleton from "../../Skeleton/UserSkeleton";
-import lib from "../../lib/lib.js"
+import lib from "../../lib/lib.js";
 import moment from "moment";
 const FriendRequest = () => {
   const [arrLength, setarrLength] = useState(10);
   const [loading, setloading] = useState(false);
-  const [FRrequestList, setFRrequestList] = useState([])
+  const [FRrequestList, setFRrequestList] = useState([]);
   const db = getDatabase();
   const auth = getAuth();
   useEffect(() => {
@@ -20,7 +28,7 @@ const FriendRequest = () => {
         const FRblanklist = [];
         snapshot.forEach((item) => {
           if (auth.currentUser.uid == item.val().reciverUid) {
-            FRblanklist.push({ ...item.val(), FRKey: item.key })
+            FRblanklist.push({ ...item.val(), FRKey: item.key });
           }
         });
         setFRrequestList(FRblanklist);
@@ -28,16 +36,55 @@ const FriendRequest = () => {
       });
     };
     fetchData();
-    //clean up 
+    //clean up
     return () => {
       const UserRef = ref(db, "users/");
-      off(UserRef)
-    }
+      off(UserRef);
+    };
   }, []);
-  console.log(FRrequestList);
 
+  // handleAcceptFR
 
+  const handleAcceptFR = (fRitem = {}) => {
+    set(push(ref(db, "friends/")), {
+      ...fRitem,
+      createdAt: lib.getTimeNow(),
+    })
+      .then(() => {
+        const dbref = ref(db, `friendRequest/${fRitem.FRKey}`);
+        remove(dbref);
+      })
+      .then(() => {
+        set(push(ref(db, "notificaton/")), {
+          notificationMsg: `${fRitem.reciverUsername} Accept a friend Request `,
+          senderprofile_picture: Loggeduser.profile_picture,
+          createdAt: lib.getTimeNow(),
+        });
+      })
+      .then(() => {
+        lib.SucessToast(
+          `${fRitem.reciverUsername} Send a friend Request `,
+          "top-center"
+        );
+      })
 
+      .catch((err) => {
+        console.error("Error from sending fR", err);
+      });
+  };
+
+  // handleReject
+  const handleReject = (item = {}) => {
+    const areYouSure = confirm("are you sure to Reject ");
+
+    if (!areYouSure) {
+      return;
+    }
+
+    // remove
+    const dbref = ref(db, `friendRequest/${item.FRKey}`);
+    remove(dbref);
+  };
   return (
     <div>
       {/* list part */}
@@ -66,8 +113,7 @@ const FriendRequest = () => {
               <div className="w-[50px] h-[50px] rounded-full">
                 <picture>
                   <img
-                    src={item.senderprofile_picture
-                      || Avatar}
+                    src={item.senderprofile_picture || Avatar}
                     alt={Avatar}
                     className="w-full h-full object-cover rounded-full"
                   />
@@ -80,12 +126,22 @@ const FriendRequest = () => {
                   {moment(item.createdAt).fromNow()}
                 </p>
               </div>
-              <button
-                type="button"
-                class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 cursor-pointer "
-              >
-                Accept
-              </button>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => handleAcceptFR(item)}
+                  class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 cursor-pointer "
+                >
+                  Accept
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleReject(item)}
+                  class="focus:outline-none text-white bg-red-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 cursor-pointer "
+                >
+                  Reject
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -96,5 +152,3 @@ const FriendRequest = () => {
 };
 
 export default FriendRequest;
-
-
