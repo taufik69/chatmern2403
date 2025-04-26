@@ -22,7 +22,7 @@ _.singUpdata = () => {
 
   return singupiterm;
 };
-_.SucessToast = (msg = "sucess msg missing" , positon = "top-right") => {
+_.SucessToast = (msg = "sucess msg missing", positon = "top-right") => {
   toast.success(msg, {
     position: positon,
     autoClose: 5000,
@@ -64,9 +64,22 @@ _.infoToast = (msg = "info Missing") => {
   });
 };
 
-// time and data 
-_.getTimeNow = ()=> {
-  return moment().format("MM DD YYYY, h:mm:ss a")
-}
+// time and data
+_.getTimeNow = () => {
+  return moment().format("MM DD YYYY, h:mm:ss a");
+};
 
+_.modalCustomStyle = () => {
+  return {
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      marginRight: "-50%",
+      width: "40%",
+      transform: "translate(-50%, -50%)",
+    },
+  };
+};
 export default _;

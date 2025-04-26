@@ -15,6 +15,7 @@ import { getAuth } from "firebase/auth";
 import UserSkeleton from "../../Skeleton/UserSkeleton";
 import Alert from "../CommonComponent/Alert";
 import moment from "moment";
+import lib from "../../lib/lib";
 const BlockUser = () => {
   const [arrLength, setarrLength] = useState(10);
   const [loading, setloading] = useState(false);
@@ -46,7 +47,27 @@ const BlockUser = () => {
   if (loading) {
     return <UserSkeleton />;
   }
-  console.log(blockedUser);
+
+  // handleUnblock
+  const handleUnblock = (blockUserInfo = {}) => {
+    set(push(ref(db, "friends/")), {
+      senderUid: blockUserInfo.senderUid,
+      senderEmail: blockUserInfo.senderEmail,
+      senderprofile_picture: blockUserInfo.senderprofile_picture,
+      senderUserKey: blockUserInfo.senderUserKey,
+      senderUsername: blockUserInfo.senderUsername,
+      reciverUid: blockUserInfo.reciverUid,
+      reciverEmail: blockUserInfo.reciverEmail,
+      reciverprofile_picture: blockUserInfo.reciverprofile_picture,
+      reciverUserKey: blockUserInfo.reciverUserKey,
+      reciverUsername: blockUserInfo.reciverUsername,
+      FRKey: blockUserInfo.FRKey,
+      createdAt: lib.getTimeNow(),
+    }).then(() => {
+      const blockDbref = ref(db, `block/${blockUserInfo.BlockKey}`);
+      remove(blockDbref);
+    });
+  };
 
   return (
     <div>
@@ -94,6 +115,7 @@ const BlockUser = () => {
                 </div>
                 <button
                   type="button"
+                  onClick={() => handleUnblock(blockUser)}
                   class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 cursor-pointer "
                 >
                   unBlock
