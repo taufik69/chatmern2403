@@ -8,6 +8,7 @@ const Grouplist = () => {
   const [arrLength, setarrLength] = useState(10);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [groupError, setGroupError] = useState({});
+  const [loading, setloading] = useState(false)
   const [groupInfo, setGroupInfo] = useState({
     groupName: "",
     groupTagName: "",
@@ -26,44 +27,75 @@ const Grouplist = () => {
 
   const handleChange = (event) => {
     const { name, value, files } = event.target;
-    setGroupInfo({
-      ...groupInfo,
-      [name]: name == "groupImage" ? files : value,
-    });
+    const newValue = name == "groupImage" ? files[0] : value;
+    // groupInfo update
+    setGroupInfo((prev) => (
+      {
+        ...prev,
+        [name]: newValue
+      }
+    ))
+
+    // remove the error property
+    setGroupError((prevError) => {
+      const updatedError = { ...prevError }
+      if (newValue !== "") {
+        // delete updatedError[`${name}Error`];
+        updatedError[`${name}Error`] = ""
+      }
+      return updatedError;
+    })
+
   };
 
   // validationGroup
   const validationGroup = (groupInfo = {}) => {
     let error = {};
-    const { groupImage, groupTagName, groupName } = groupInfo;
-    if (!groupImage) {
-      error.groupImageError = "group Image Missing";
+    for (let field in groupInfo) {
+      if (groupInfo[field] == "") {
+        error[`${field}Error`] = `${field} Missing `
+      }
     }
-    if (!groupTagName) {
-      error.groupTagnameError = "group TagName Missing";
-    }
-    if (!groupName) {
-      error.groupNameError = "Group name missing";
-    }
-    return error;
+    setGroupError(error);
+    return Object.keys(error).length === 0
   };
 
   // hanldeCreateGroup
-  const hanldeCreateGroup = () => {
+  const hanldeCreateGroup = async () => {
     const error = validationGroup(groupInfo);
-    if (error) {
-      setGroupError(error);
+    if (!error) return
+    // next process
+    const formData = new FormData();
+    formData.append("file", groupInfo.groupImage);
+    formData.append("upload_preset", import.meta.env.VITE_UPLOAD_PRESET);
+    const cloudinaryApi = import.meta.env.VITE_CLOUDINARY_API
+
+    setloading(true)
+    try {
+      const res = await fetch(cloudinaryApi, {
+        method: "POST",
+        body: formData,
+      })
+
+      const data = await res.json()
+      console.log(data.secure_url);
+
+
+    } catch (error) {
+      console.log('error ', error);
+
+    } finally {
+      setloading(false)
+      setGroupInfo({
+        groupName: "",
+        groupTagName: "",
+        groupImage: "",
+      })
+      setGroupError({})
+      closeModal()
     }
-  };
+  }
 
-  // key up
-  const handleKey = (e) => {
-    console.log(e.key);
-    const error = validationGroup(groupInfo);
-    setGroupError(error);
-  };
-
-  console.log(groupError);
 
   return (
     <>
@@ -179,14 +211,16 @@ const Grouplist = () => {
               <input
                 type="text"
                 onChange={handleChange}
-                onKeyDownCapture={handleKey}
+
                 name="groupName"
                 class="bg-green-50 border border-green-500 text-green-900 dark:text-green-400 placeholder-green-700 dark:placeholder-green-500 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-green-500"
                 placeholder="Success input"
               />
-              <p class="mt-2 text-sm text-red-600 ">
-                {groupError && groupError.groupNameError}
-              </p>
+
+              {groupError.groupNameError && (
+                <span class="mt-2 text-sm text-red-600 ">{groupError.groupNameError}</span>
+              )}
+
             </div>
 
             <div class="mb-6">
@@ -199,14 +233,16 @@ const Grouplist = () => {
               <input
                 type="text"
                 onChange={handleChange}
-                onKeyDownCapture={handleKey}
+
                 name="groupTagName"
                 class="bg-green-50 border border-red-500 text-green-900 dark:text-green-400 placeholder-green-700 dark:placeholder-green-500 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-green-500"
                 placeholder="Success input"
               />
-              <p class="mt-2 text-sm text-red-600 ">
-                {groupError && groupError.groupTagnameError}
-              </p>
+              {groupError.groupTagNameError && (
+                <span class="mt-2 text-sm text-red-600 ">{groupError.groupTagNameError}</span>
+              )}
+
+
             </div>
 
             <div class="flex items-center justify-center w-full">
@@ -237,28 +273,36 @@ const Grouplist = () => {
                   <p class="text-xs text-gray-500 dark:text-gray-400">
                     SVG, PNG, JPG or GIF (MAX. 800x400px)
                   </p>
-                  <p class="text-xs text-red-500  ">
-                    {groupError && groupError.groupImageError}
-                  </p>
+                  {groupError.groupImageError && (
+                    <span class="mt-2 text-sm text-red-600 ">{groupError.groupImageError}</span>
+                  )}
+
                 </div>
                 <input
                   id="dropzone-file"
                   type="file"
                   // class="hidden"
-                  onKeyDownCapture={handleKey}
+
                   onChange={handleChange}
                   name="groupImage"
                 />
               </label>
             </div>
 
-            <button
+            {loading ? (<button
+              type="button"
+
+              class=" w-full mt-4 cursor-pointer text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+            >
+              uploading....
+            </button>) : (<button
               type="button"
               onClick={hanldeCreateGroup}
               class=" w-full mt-4 cursor-pointer text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
             >
-              create
-            </button>
+              upload
+            </button>)}
+
           </div>
         </Modal>
       </div>
