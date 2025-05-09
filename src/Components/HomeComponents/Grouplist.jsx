@@ -1,86 +1,54 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { HiDotsVertical } from "react-icons/hi";
 import Avatar from "../../assets/homeAssets/avatar.gif";
 import Modal from "react-modal";
 import lib from "../../lib/lib";
-import { VscLaw } from "react-icons/vsc";
+import { getAuth } from "firebase/auth";
+import { closeModal, openModal } from "../../utils/modal.utils";
+import { validationGroup } from "../../validation/grouplist.validation";
+import { handleChange } from "../../utils/ChangeHandaler.utils";
+import { uploadCloudinaryFile } from "../../utils/cloudinary.utils";
+import { uploadFirebaseData } from "../../utils/uploadFirebase.utils";
+import { useFetchData } from "../../hooks/fetchData";
 const Grouplist = () => {
+  const inputRef = useRef(null)
+  const auth = getAuth()
+  const { data, loading: isLoading, error } = useFetchData('Grouplist/');
   const [arrLength, setarrLength] = useState(10);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [groupError, setGroupError] = useState({});
   const [loading, setloading] = useState(false)
+
   const [groupInfo, setGroupInfo] = useState({
     groupName: "",
     groupTagName: "",
     groupImage: "",
   });
 
-  function openModal() {
-    setIsOpen(true);
-  }
+  console.log(data);
 
-  function closeModal() {
-    setIsOpen(false);
-  }
 
-  // handleChange funtion
-
-  const handleChange = (event) => {
-    const { name, value, files } = event.target;
-    const newValue = name == "groupImage" ? files[0] : value;
-    // groupInfo update
-    setGroupInfo((prev) => (
-      {
-        ...prev,
-        [name]: newValue
-      }
-    ))
-
-    // remove the error property
-    setGroupError((prevError) => {
-      const updatedError = { ...prevError }
-      if (newValue !== "") {
-        // delete updatedError[`${name}Error`];
-        updatedError[`${name}Error`] = ""
-      }
-      return updatedError;
-    })
-
-  };
-
-  // validationGroup
-  const validationGroup = (groupInfo = {}) => {
-    let error = {};
-    for (let field in groupInfo) {
-      if (groupInfo[field] == "") {
-        error[`${field}Error`] = `${field} Missing `
-      }
-    }
-    setGroupError(error);
-    return Object.keys(error).length === 0
-  };
 
   // hanldeCreateGroup
   const hanldeCreateGroup = async () => {
-    const error = validationGroup(groupInfo);
+    const error = validationGroup(groupInfo, setGroupError);
     if (!error) return
     // next process
     const formData = new FormData();
     formData.append("file", groupInfo.groupImage);
     formData.append("upload_preset", import.meta.env.VITE_UPLOAD_PRESET);
-    const cloudinaryApi = import.meta.env.VITE_CLOUDINARY_API
-
     setloading(true)
     try {
-      const res = await fetch(cloudinaryApi, {
-        method: "POST",
-        body: formData,
+      const Url = await uploadCloudinaryFile(formData)
+      await uploadFirebaseData('Grouplist/', {
+        adminUid: auth.currentUser.uid,
+        adminName: auth.currentUser.displayName,
+        adminEmail: auth.currentUser.email,
+        adminPhoto: auth.currentUser.photoURL,
+        groupName: groupInfo.groupName,
+        groupTagName: groupInfo.groupTagName,
+        groupImage: Url
       })
-
-      const data = await res.json()
-      console.log(data.secure_url);
-
-
     } catch (error) {
       console.log('error ', error);
 
@@ -92,10 +60,12 @@ const Grouplist = () => {
         groupImage: "",
       })
       setGroupError({})
-      closeModal()
+      if (inputRef.current) {
+        inputRef.current.value = null
+      }
+      closeModal(setIsOpen)
     }
   }
-
 
   return (
     <>
@@ -141,7 +111,7 @@ const Grouplist = () => {
             <span>
               <button
                 type="button"
-                onClick={openModal}
+                onClick={() => openModal(setIsOpen)}
                 class="focus:outline-none text-white bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 cursor-pointer "
               >
                 Create Group
@@ -194,7 +164,7 @@ const Grouplist = () => {
         >
           <button
             type="button"
-            onClick={closeModal}
+            onClick={() => closeModal(setIsOpen)}
             className="text-white cursor-pointer bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
           >
             close
@@ -210,8 +180,8 @@ const Grouplist = () => {
               </label>
               <input
                 type="text"
-                onChange={handleChange}
-
+                onChange={(event) => handleChange(event, setGroupInfo, setGroupError)}
+                value={groupInfo.groupName}
                 name="groupName"
                 class="bg-green-50 border border-green-500 text-green-900 dark:text-green-400 placeholder-green-700 dark:placeholder-green-500 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-green-500"
                 placeholder="Success input"
@@ -232,7 +202,8 @@ const Grouplist = () => {
               </label>
               <input
                 type="text"
-                onChange={handleChange}
+                onChange={(event) => handleChange(event, setGroupInfo, setGroupError)}
+                value={groupInfo.groupTagName}
 
                 name="groupTagName"
                 class="bg-green-50 border border-red-500 text-green-900 dark:text-green-400 placeholder-green-700 dark:placeholder-green-500 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-green-500"
@@ -282,8 +253,9 @@ const Grouplist = () => {
                   id="dropzone-file"
                   type="file"
                   // class="hidden"
+                  ref={inputRef}
+                  onChange={(event) => handleChange(event, setGroupInfo, setGroupError)}
 
-                  onChange={handleChange}
                   name="groupImage"
                 />
               </label>
