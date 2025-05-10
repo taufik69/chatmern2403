@@ -11,6 +11,8 @@ import { getDatabase, push, ref, set } from "firebase/database";
 import { Link, useNavigate } from "react-router";
 import { HashLoader } from "react-spinners";
 import libaray from "../../lib/lib";
+import { useContext } from "react";
+import { countContext } from "../../context/CountContext";
 const SignUp = () => {
   const auth = getAuth();
   const db = getDatabase();
@@ -101,6 +103,8 @@ const SignUp = () => {
   const handleEye = () => {
     seteye(!eye);
   };
+
+
 
   return (
     <div>

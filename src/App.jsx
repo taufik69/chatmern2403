@@ -11,12 +11,15 @@ const App = () => {
       <Routes>
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Home />}></Route>
-          <Route path="/message" element={<Chat/>} />
+          <Route path="/message" element={<Chat />} />
           <Route path="/notification" element={"this is notification page"} />
           <Route path="/settings" element={"This is setting page"}></Route>
         </Route>
         {/* asd */}
-        <Route path="/signup" element={<SignUp />} />
+       
+          <Route path="/signup" element={<SignUp />} />
+        
+
         <Route path="/signin" element={<Signin />} />
       </Routes>
     </BrowserRouter>

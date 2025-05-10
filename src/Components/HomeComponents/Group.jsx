@@ -1,15 +1,30 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { HiDotsVertical } from "react-icons/hi";
 import Avatar from "../../assets/homeAssets/avatar.gif";
-const  Group = () => {
+import HomeError from "../../pages/Error/HomeError";
+import OwnGroupError from "../../pages/Error/OwnGroupError";
+import { countContext } from "../../context/CountContext";
+const Group = () => {
   const [arrLength, setarrLength] = useState(10);
+  // if (true) {
+  //   return (
+  //     <HomeError>
+  //       <OwnGroupError>
+  //         <h2 class="mb-2 text-[50px] font-bold leading-none text-white sm:text-[80px] md:text-[100px]">
+  //           501
+  //         </h2>
+  //       </OwnGroupError>
+  //     </HomeError>
+  //   );
+  // }
+
   return (
     <div>
       {/* list part */}
       <div className="shadow-2xs mt-3">
         <div className="flex items-center justify-between">
           <h1 className="relative">
-          Group 
+            Group
             <span className="absolute right-0 top-0 w-5 h-5 rounded-full bg-green-300 flex items-center justify-center">
               {arrLength}
             </span>
@@ -44,9 +59,7 @@ const  Group = () => {
                   Hi Guys, Wassup!
                 </p>
               </div>
-             <p>
-             Today, 8:56pm
-             </p>
+              <p>Today, 8:56pm</p>
             </div>
           ))}
         </div>
@@ -57,5 +70,3 @@ const  Group = () => {
 };
 
 export default Group;
-
-

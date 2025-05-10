@@ -1,10 +1,11 @@
 import React from "react";
 import Grouplist from "../../Components/HomeComponents/Grouplist";
-import  Friends  from "../../Components/HomeComponents/Friends";
+import Friends from "../../Components/HomeComponents/Friends";
 import UserList from "../../Components/HomeComponents/UserList";
 import FriendRequest from "../../Components/HomeComponents/FriendRequest";
 import Group from "../../Components/HomeComponents/Group";
 import BlockUser from "../../Components/HomeComponents/BlockUser";
+import { CounterProvider } from "../../context/CountContext";
 
 const Home = () => {
   return (
@@ -26,13 +27,11 @@ const Home = () => {
       <div className=" w-[25vw]  shadow-2xl rounded-2xl ">
         <Group />
       </div>
+
       <div className=" w-[25vw]  shadow-2xl rounded-2xl ">
         <BlockUser />
       </div>
-
-   
     </div>
-      
   );
 };
 

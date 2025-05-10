@@ -2,6 +2,8 @@ import React from "react";
 import Group from "../../Components/HomeComponents/Group";
 import Friends from "../../Components/HomeComponents/Friends";
 import { HiDotsVertical } from "react-icons/hi";
+import { useContext } from "react";
+import { countContext } from "../../context/CountContext";
 
 const Chat = () => {
   return (

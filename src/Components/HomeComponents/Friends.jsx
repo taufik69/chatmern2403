@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { HiDotsVertical } from "react-icons/hi";
 import Avatar from "../../assets/homeAssets/avatar.gif";
 import {
@@ -15,6 +15,7 @@ import UserSkeleton from "../../Skeleton/UserSkeleton";
 import lib from "../../lib/lib.js";
 import moment from "moment";
 import Alert from "../CommonComponent/Alert.jsx";
+import { countContext } from "../../context/CountContext.jsx";
 const Friends = () => {
   const [arrLength, setarrLength] = useState(10);
   const [loading, setloading] = useState(false);
