@@ -8,7 +8,6 @@ import { CounterProvider } from "./context/CountContext.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ToastContainer />
-
     <App />
   </StrictMode>
 );

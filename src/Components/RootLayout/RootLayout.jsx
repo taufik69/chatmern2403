@@ -4,6 +4,7 @@ import Sidebar from "../HomeComponents/Sidebar";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import ValidationError from "../../pages/Error/ValidationError";
 import { IoEllipseSharp } from "react-icons/io5";
+import Grouplist from "../HomeComponents/Grouplist";
 const RootLayout = () => {
   const navigate = useNavigate();
   const auth = getAuth();
@@ -25,6 +26,7 @@ const RootLayout = () => {
         <div className=" flex gap-x-[30px] p-3 ">
           <div>
             <Sidebar />
+
           </div>
           <div className="w-full   h-[100dvh] rounded-3xl  shadow-2xs ">
             <Outlet />

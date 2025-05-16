@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import SignUp from "./pages/SingUP/Index";
 import { BrowserRouter, Routes, Route } from "react-router";
 import Signin from "./pages/SignIn/Signin";
@@ -6,6 +6,7 @@ import Home from "./pages/Home/Index";
 import RootLayout from "./Components/RootLayout/RootLayout";
 import Chat from "./pages/Chat/Chat";
 const App = () => {
+
   return (
     <BrowserRouter>
       <Routes>
@@ -16,9 +17,9 @@ const App = () => {
           <Route path="/settings" element={"This is setting page"}></Route>
         </Route>
         {/* asd */}
-       
-          <Route path="/signup" element={<SignUp />} />
-        
+
+        <Route path="/signup" element={<SignUp />} />
+
 
         <Route path="/signin" element={<Signin />} />
       </Routes>
