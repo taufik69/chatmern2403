@@ -5,9 +5,13 @@ import "./index.css";
 import App from "./App.jsx";
 import { ToastContainer } from "react-toastify";
 import { CounterProvider } from "./context/CountContext.jsx";
+import store from "./features/store.js";
+import { Provider } from "react-redux";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ToastContainer />
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </StrictMode>
 );

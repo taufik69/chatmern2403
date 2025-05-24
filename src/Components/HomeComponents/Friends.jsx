@@ -15,8 +15,10 @@ import UserSkeleton from "../../Skeleton/UserSkeleton";
 import lib from "../../lib/lib.js";
 import moment from "moment";
 import Alert from "../CommonComponent/Alert.jsx";
-import { countContext } from "../../context/CountContext.jsx";
-const Friends = () => {
+import { FriendAction } from "../../features/slices/friendSlice.js";
+import { useDispatch } from "react-redux";
+const Friends = ({ showButton = true }) => {
+  const dispatch = useDispatch();
   const [arrLength, setarrLength] = useState(10);
   const [loading, setloading] = useState(false);
   const [FRList, setFRList] = useState([]);
@@ -66,6 +68,26 @@ const Friends = () => {
       });
   };
 
+  // handleFriendInfo
+  const handleFriendInfo = (frdInfo) => {
+    if (auth.currentUser.uid === frdInfo.reciverUid) {
+      let userObj = {
+        userUid: frdInfo.senderUid,
+        userName: frdInfo.senderUsername,
+        userEmail: frdInfo.senderEmail,
+        userProfilePicture: frdInfo.senderprofile_picture,
+      };
+      dispatch(FriendAction(userObj));
+    } else {
+      let userObj = {
+        userUid: frdInfo.reciverUid,
+        userName: frdInfo.reciverUsername,
+        userEmail: frdInfo.reciverEmail,
+        userProfilePicture: frdInfo.reciverprofile_picture,
+      };
+      dispatch(FriendAction(userObj));
+    }
+  };
   return (
     <div>
       {/* list part */}
@@ -88,12 +110,12 @@ const Friends = () => {
           ) : (
             FRList?.map((friend, index) => (
               <div
+                onClick={() => handleFriendInfo(friend)}
                 className={
                   arrLength - 1 === index
-                    ? "flex items-center justify-between mt-3   pb-2"
-                    : "flex items-center justify-between mt-3 border-b border-b-gray-800 pb-2"
-                }
-              >
+                    ? "flex items-center  justify-between mt-3   pb-2"
+                    : "flex items-center cursor-pointer justify-between mt-3 border-b border-b-gray-800 pb-2"
+                }>
                 <div className="w-[50px] h-[50px] rounded-full">
                   <picture>
                     <img
@@ -111,13 +133,14 @@ const Friends = () => {
                   </p>
                 </div>
                 <p>{moment(friend.createdAt).fromNow()}</p>
-                <button
-                  type="button"
-                  onClick={() => handleBlock(friend)}
-                  class="focus:outline-none cursor-pointer text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-                >
-                  Block
-                </button>
+                {showButton && (
+                  <button
+                    type="button"
+                    onClick={() => handleBlock(friend)}
+                    class="focus:outline-none cursor-pointer text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+                    Block
+                  </button>
+                )}
               </div>
             ))
           )}
