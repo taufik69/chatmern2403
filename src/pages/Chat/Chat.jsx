@@ -102,41 +102,44 @@ const Chat = () => {
           {/* chat top part */}
           {/* chat view */}
           <hr className="mt-4" />
+
           <div className="flex flex-col overflow-y-scroll h-[70vh]">
-            {allMsg?.map((msg) =>
-              //auth.currentUser.uid == item.WhoSendMsgUid &&
-              // item.whoRecivedMsgUid == Users.id
-              auth.currentUser.uid === msg.whoSendMsgUid &&
-              msg.whoRecivedMsgUid == user.userUid ? (
-                <div className="self-end">
-                  <div className="flex flex-col items-start mt-7">
-                    <div className="px-5 w-full  text-wrap py-3 bg-blue-300 rounded-3xl">
-                      <h2 className="">{msg.message}</h2>
+            {allMsg?.map((msg) => {
+              //ami  sender, user receiver
+              if (
+                auth.currentUser.uid === msg.whoSendMsgUid &&
+                msg.whoRecivedMsgUid === user.userUid
+              ) {
+                return (
+                  <div key={msg.msgKey} className="self-end">
+                    <div className="flex flex-col items-end mt-7">
+                      <div className="px-5 w-full text-wrap py-3 bg-blue-300 rounded-3xl">
+                        <h2>{msg.message}</h2>
+                      </div>
+                      <p>Today, 2:02pm</p>
                     </div>
-                    <p>Today, 2:02pm</p>
                   </div>
-                </div>
-              ) : auth.currentUser.uid == msg.whoRecivedMsgUid &&
-                user.userUid == msg.WhoSendMsgUid ? (
-                <div className="self-end">
-                  <div className="flex flex-col items-start mt-4">
-                    <div className="px-5 w-full  text-wrap py-3 bg-gray-300 rounded-3xl">
-                      <h2 className="">{msg.message}</h2>
+                );
+              }
+              // User sender, ami receiver
+              else if (
+                msg.whoSendMsgUid === user.userUid &&
+                msg.whoRecivedMsgUid === auth.currentUser.uid
+              ) {
+                return (
+                  <div key={msg.msgKey} className="self-start">
+                    <div className="flex flex-col items-start mt-4">
+                      <div className="px-5 w-full text-wrap py-3 bg-gray-300 rounded-3xl">
+                        <h2>{msg.message}</h2>
+                      </div>
+                      <p>Today, 2:02pm</p>
                     </div>
-                    <p>Today, 2:02pm</p>
                   </div>
-                </div>
-              ) : (
-                <div className="self-end">
-                  <div className="flex flex-col items-start mt-4">
-                    <div className="px-5 w-full  text-wrap py-3 bg-gray-300 rounded-3xl">
-                      <h2 className="">{msg.message}</h2>
-                    </div>
-                    <p>Today, 2:02pm</p>
-                  </div>
-                </div>
-              )
-            )}
+                );
+              }
+              // Onno message gulo show korbo na
+              return null;
+            })}
           </div>
           {/* chat view */}
           <hr className="mt-4" />
@@ -156,7 +159,8 @@ const Chat = () => {
               <div className="flex items-center gap-x-4">
                 <span
                   className="text-xl cursor-pointer"
-                  onClick={() => setemojiOpen(!emojiOpen)}>
+                  onClick={() => setemojiOpen(!emojiOpen)}
+                >
                   <FaRegSmile />
                 </span>
                 <span className="text-xl cursor-pointer">
@@ -187,4 +191,4 @@ const Chat = () => {
     </div>
   );
 };
-export default Chat;
+export default React.memo(Chat);
